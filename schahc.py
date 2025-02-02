@@ -1,7 +1,7 @@
-from bisect import insort_left
-from functools import partial
 
-from move_notation import index_to_chess
+
+
+
 board_struct = {
     'white':
         {
@@ -24,7 +24,8 @@ board_struct = {
         'knights': [],
         'casteling': [],
 
-    }
+    },
+    'en_pasant': ''
 }
 board = []
 for i in range(64):
@@ -96,123 +97,170 @@ def knight_movments(board_index):
     edges = [on_left_edge,on_right_edge,on_top_edge,on_down_edge]
 
 
-def check_for_piece(piece,white,index):
-
-    if white:
-        if board_struct['white'][piece][index] == piece:
-            return True
+def check_for_piece(pieces,white,index) -> bool: # usles ...
+    Bools = []
+    for piece in pieces:
+        if white:
+            if board_struct['white'][piece][index] == piece:
+                Bools.append(True)
+            else:
+                Bools.append(False)
         else:
-            return False
-    else:
-        if board_struct['black'][piece][index] == piece:
-            return True
-        else:
-            return False
+            if board_struct['black'][piece][index] == piece:
+                Bools.append(True)
+            else:
+                Bools.append(False)
+    return any(Bools)
+def check_for_any(index,board=board_struct) -> list[str,str] or str:# returns the piece that is on the given index
+
+    for outer_key in board_struct.keys():
+        if key == 'en_pasant':
+            continue
+        for key in board_struct[outer_key].keys():
+            if key == 'casteling':
+                continue
+            if key[index] == 1:
+                return [key, outer_key]
+    return 'no piece' # in the case that the index is empty on all ac
 
 
-
-
-def rook_movments(board_index,function,color): # TODO introuduce a paramater that its pinned
+def rook_movments(board_index,function,color):
     not_on_edge = True
     move_index = board_index
-    inner_function_logs = []
-    if not_on_edge:  # RIGHT →
+    possibel_moves = []
+    all_moves = []
+    while not_on_edge:  # RIGHT →
 
         not_on_edge = not right_edge(move_index)
         if not_on_edge:
             move_index += 1
+            possibel_moves.append(move_index)
             function()
             # TODO add check_index() function and action
 
     not_on_edge = True
+    all_moves.append(possibel_moves)
+    possibel_moves = []
     move_index = board_index
 
-    if not_on_edge:  # LEFT ←
+
+    while not_on_edge:  # LEFT ←
 
         not_on_edge = not left_edge(move_index)
         if not_on_edge:
             move_index -= 1
-
+            possibel_moves.append(move_index)
+    all_moves.append(possibel_moves)
+    possibel_moves = []
     not_on_edge = True
     move_index = board_index  # reset
 
-    if not_on_edge:  # TOP ↑
+    while not_on_edge:  # TOP ↑
 
         not_on_edge = not top_edge(move_index)
         if not top_edge(move_index):
             move_index -= 8
-
+            possibel_moves.append(move_index)
+    all_moves.append(possibel_moves)
+    possibel_moves = []
     not_on_edge = True
     move_index = board_index
 
-    if not_on_edge:  # DOWN ↓
+    while not_on_edge:  # DOWN ↓
 
         not_on_edge = not down_edge(move_index)
         if not down_edge(move_index):
             move_index += 8
+            possibel_moves.append(move_index)
+        all_moves.append(possibel_moves)
+        possibel_moves = []
+    return all_moves
+
 
 def bishop_movments(board_index):
     not_on_edge = True
     move_index = board_index
-    if not_on_edge:  # RIGHT UP →
+    possibel_moves = []
+    all_moves = []
+    while not_on_edge:  # RIGHT UP →
 
         not_on_edge = not (right_edge(move_index) or top_edge(move_index))
         if not_on_edge:
             move_index -= 7
-
+            possibel_moves.append(move_index)
+    all_moves.append(possibel_moves)
+    possibel_moves = []
     not_on_edge = True
     move_index = board_index
 
-    if not_on_edge:  # LEFT UP←
+    while not_on_edge:  # LEFT UP←
 
         not_on_edge = not (left_edge(move_index) or top_edge(move_index))
         if not_on_edge:
             move_index -= 9
-
+            possibel_moves.append(move_index)
+    all_moves.append(possibel_moves)
+    possibel_moves = []
     not_on_edge = True
     move_index = board_index  # reset
 
-    if not_on_edge:  # Down left ↓
+    while not_on_edge:  # Down left ↓
 
         not_on_edge = not (down_edge(move_index) or left_edge(move_index))
 
         if not_on_edge:
             move_index += 7
-            print(move_index)
+            possibel_moves.append(move_index)
 
+    all_moves.append(possibel_moves)
+    possibel_moves = []
     not_on_edge = True
     move_index = board_index
 
-    if not_on_edge:  # DOWN Right ↓
+    while not_on_edge:  # DOWN Right ↓
 
         not_on_edge = not (down_edge(move_index) or right_edge(move_index))
         if not_on_edge:
             move_index += 9
+            possibel_moves.append(move_index)
+    all_moves.append(possibel_moves)
+    possibel_moves = []
+    return all_moves
 
 
 
-print(bishop_movments(22))
 
-
-def is_check(board,white: bool):
+def is_check(board,white: bool) -> bool:
     if white:
         color = "white"
     else:
         color = "black"
     king_index = board[color]['king'].index()
+    all_rook_moves = rook_movments(king_index)
+    check_pieces = ['rook','bishops','knight','pawn','queen']
+    for direction in all_rook_moves:
+        for index in direction:
+            if check_for_piece('rook',(not white),index=index):
+                return True
+            elif check_for_piece(check_pieces,white, index):
+                break
+
+    all_bishop_moves = bishop_movments(king_index)
+    for direction in all_bishop_moves:
+        for index in direction:
+            for index in direction:
+                if check_for_piece('bishops', (not white), index=index):
+                    return True
+                elif check_for_piece(check_pieces, white, index):
+                    break
 
 
 
 
-def find_moves(board,castel_rights):
-    board_index = 0
-    for piece in board:
-        move_index = board_index
-        if piece == 1: # selects piece to move with in the postion
-            pass
+
+def main_move_finder
 
 
-        board_index += 1
 
 
 
