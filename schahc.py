@@ -1,7 +1,4 @@
 
-
-
-
 board_struct = {
     'white':
         {
@@ -87,6 +84,30 @@ def pawn_movment(board_index,white):
 
 
 
+def distance_top(distance,row_index):
+
+    if row_index >= distance:
+        return True
+    else:
+        return
+
+def distance_right(distance,colum_index):
+    if 8 - colum_index >= distance:
+        return True
+    else:
+        return False
+def distance_bottom(distance,row_index):
+    if 8 - row_index >= distance:
+        return True
+    else:
+        return False
+def distance_left(distance,row_index):
+    if row_index >= distance:
+        return False
+    else:
+        return True
+
+
 
 def knight_movments(board_index):
 
@@ -94,7 +115,24 @@ def knight_movments(board_index):
     on_down_edge = down_edge(board_index)
     on_left_edge = left_edge(board_index)
     on_right_edge = right_edge(board_index)
-    edges = [on_left_edge,on_right_edge,on_top_edge,on_down_edge]
+
+    count = 0
+    row_index = 0
+    for i in range(0,64,8):
+        if board_index >= i:
+            row_index = count
+            break
+        count += 1
+
+    on_row_index = board_index - (row_index * 8 - 1)
+
+    directions = ['top','right','bottom','left']
+    for direction in directions:
+
+        for secondary_direction in secondary_directions:
+
+
+
 
 
 def check_for_piece(pieces,white,index) -> bool: # usles ...
@@ -258,7 +296,7 @@ def is_check(board,white: bool) -> bool:
 
 
 
-def main_move_finder
+
 
 
 
