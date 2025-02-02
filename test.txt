@@ -1,0 +1,62 @@
+     not_on_edge = True
+
+
+    move_index = board_index
+    if not_on_edge:  # RIGHT UP →
+
+        not_on_edge = not (right_edge(move_index) or top_edge(move_index))
+        if not_on_edge:
+            move_index -= 7
+
+
+    not_on_edge = True
+    move_index = board_index
+
+    if not_on_edge:  # LEFT UP←
+
+        not_on_edge = not (left_edge(move_index) or top_edge(move_index))
+        if not_on_edge:
+            move_index -= 9
+
+
+
+    not_on_edge = True
+    move_index = board_index
+    if not_on_edge:  # RIGHT UP →
+
+        not_on_edge = not (right_edge(move_index) or top_edge(move_index))
+        if not_on_edge:
+            move_index -= 7
+
+
+    not_on_edge = True
+    move_index = board_index
+
+    if not_on_edge:  # LEFT UP←
+
+        not_on_edge = not (left_edge(move_index) or top_edge(move_index))
+        if not_on_edge:
+            move_index -= 9
+
+
+
+
+    not_on_edge = True
+    move_index = board_index  # reset
+
+    if not_on_edge:  # Down left ↓
+
+        not_on_edge = not (down_edge(move_index) or left_edge(move_index))
+
+        if not_on_edge:
+            move_index += 7
+            print(move_index)
+
+    not_on_edge = True
+    move_index = board_index
+
+    if not_on_edge:  # DOWN Right ↓
+
+        not_on_edge = not (down_edge(move_index) or right_edge(move_index))
+        if not_on_edge:
+            move_index += 9
